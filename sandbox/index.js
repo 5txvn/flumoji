@@ -7,9 +7,7 @@ function delay(time) {
     });
 }
 
-const emojis = {
-    emojiNames: []
-};
+const emojis = {};
 
 (async() => {
     const browser = await puppeteer.launch({
@@ -34,7 +32,13 @@ const emojis = {
             const shortName = await (await currentElement.getProperty("textContent")).jsonValue();
             console.log(shortName.replace(/⊛/g, "").replace(/’/g, "").trim())
             shortNames.push(shortName.replace(/⊛/g, "").replace(/’/g, "").trim());
-            emojis.emojiNames.push(shortName.replace(/⊛/g, "").replace(/’/g, "").trim())
+            const emojiElementSelector = `body > div.main > table > tbody > tr:nth-child(${count}) > td.andr > a > img`
+            const emoji = await page.evaluate((selector) => {
+                const imgElement = document.querySelector(selector);
+                return imgElement.alt
+            }, emojiElementSelector);
+            console.log(emoji)
+            emojis[shortName.replace(/⊛/g, "").replace(/’/g, "").replace(/ /g, "-").replace(/:/g, "").replace(/,/g, "").toLowerCase().trim()] = emoji
             await currentElement.scrollIntoView({ behavior: "smooth" });
         }
         if (count == 2071) {

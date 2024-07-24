@@ -1,0 +1,1 @@
+console.log(("flag: Wales").replace(/: /g, ""))
